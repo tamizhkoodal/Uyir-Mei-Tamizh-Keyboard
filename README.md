@@ -21,19 +21,21 @@ Native Tamizh keyboard. First-class macOS support; Windows/Android/iOS planned.
 ## Key placement (உயிர்+மெய்)
 Keyboard letter placement based on tamizh grammer Uyir+Mei for easy remember
 
-- **Kuril (short vowels)**: அ, இ, உ, எ, ஒ, ஐ, ஔ
-- **Nedil (long vowels)** (Shift): ஆ, ஈ, ஊ, ஏ, ஓ
-- **Pulli**: ◌்
+தட்டச்சு பொத்தான்களை சுலபமாக நினைவில் வைத்துக்கொள்ள
 
-- **Vallinam**: க, ச, ட, த, ப, ற
-- **Idaiyinam**: ய, ர, ல, வ, ழ, ள
-- **Mellinam**: ங, ஞ, ண, ந, ம, ன
+- **குறில் (short vowels)**: அ, இ, உ, எ, ஒ, ஐ, ஔ
+- **நெடில் (long vowels)** (Shift): ஆ, ஈ, ஊ, ஏ, ஓ
+- **புள்ளி**: ◌்
 
-- **Grantha letters** (option + Shift): ஸ, ஷ, ஜ, ஹ, க்ஷ
+- **வல்லினம்**: க, ச, ட, த, ப, ற
+- **இடையினம்**: ய, ர, ல, வ, ழ, ள
+- **மெல்லினம்**: ங, ஞ, ண, ந, ம, ன
+
+- **கிரந்த எழுத்துக்கள்** (option + Shift): ஸ, ஷ, ஜ, ஹ, க்ஷ
 
 
 Examples:
-   க் + இ → கி 
+   க் + இ → கி
    க +  ி → கி,
    க் + ஆ → கா,
    த் + உ → து
@@ -42,10 +44,18 @@ Examples:
 ## Download (macOS)
 - Installer: [TamizhUyirMei-Keylayout-0.1.0.pkg](apps/macos/installer/TamizhUyirMei-Keylayout-0.1.0.pkg?raw=1)
 
+### பதிவிறக்கம் (macOS)
+- நிறுவி: [TamizhUyirMei-Keylayout-0.1.0.pkg](apps/macos/installer/TamizhUyirMei-Keylayout-0.1.0.pkg?raw=1)
+
 ## Quick install (macOS)
 - Run the pkg.
 - Log out/in (or reboot).
 - System Settings → Keyboard → Input Sources → + → search “Tamizh Uyir Mei” → Add.
+
+### விரைவு நிறுவல் (macOS)
+- pkg கோப்பை இயக்கவும்.
+- வெளியேறி மீண்டும் உள்நுழையவும் (அல்லது மறுதொடக்கம்).
+- System Settings → Keyboard → Input Sources → + → “Tamizh Uyir Mei” எனத் தேடி சேர்க்கவும்.
 
 ## Highlights
 - Tamil typing that feels native
@@ -57,6 +67,16 @@ Examples:
 - Clean packaging
   - Single `.pkg` output; no build folders left behind
 
+### முக்கிய அம்சங்கள்
+- இயல்பான தமிழ் தட்டச்சு அனுபவம்
+  - பொது Tamil99 குறிப்பு அமைப்பு
+  - உயிர்+மெய் சேர்க்கை (actions) மூலம் சரியான எழுத்துச்சேர்க்கை
+- macOS குறுக்கு விசைகள் வழக்கம் போல்
+  - Command (⌘) பயன்பாட்டுக் குறுக்குவழிகளுக்கு ASCII
+  - Control (⌃) கட்டுப்பாட்டு குறியீடுகள்
+- சுத்தமான தொகுப்பு
+  - ஒரே `.pkg` வெளியீடு; கூடுதல் build கோப்புகள் இல்லை
+
 
 ## Build from source (macOS)
 Prereqs: Xcode Command Line Tools, `pkgbuild`
@@ -66,16 +86,37 @@ npm run macos:pkg            # creates apps/macos/installer/TamizhUyirMei-Keylay
 npm run macos:pkg:install    # installs the latest pkg
 ```
 
+### மூலமாக கட்டமைப்பு (macOS)
+தேவைகள்: Xcode Command Line Tools, `pkgbuild`
+```
+npm run macos:pkg            # apps/macos/installer/ இல் pkg உருவாகும்
+npm run macos:pkg:install    # சமீபத்திய pkg நிறுவும்
+```
+
 ## Troubleshooting
 - Layout not showing after install: log out/in (or reboot), then add the input source.
 - Already added but not switching: enable “Show Input menu in menu bar” in Keyboard settings.
+
+### சிக்கல்கள் / தீர்வுகள்
+- நிறுவிய பின் அமைப்பு தெரியவில்லை: வெளியேறி/மறுதொடக்கம் செய்து மீண்டும் Input Source சேர்க்கவும்.
+- மெனு மாறவில்லை: Keyboard settings இல் “Show Input menu in menu bar” ஐ இயக்கவும்.
 
 ## Project structure
 - `apps/macos/layout/` — `TamizhUyirMei.keylayout`, optional `TamizhUyirMei.icns`
 - `apps/macos/scripts/` — `build_layout.sh` (builds `.pkg`)
 - `apps/macos/installer/` — output `.pkg`
 
+### திட்ட அமைப்பு
+- `apps/macos/layout/` — keylayout மற்றும் (விருப்ப) icon
+- `apps/macos/scripts/` — `.pkg` உருவாக்கும் script
+- `apps/macos/installer/` — உருவான `.pkg`
+
 ## Roadmap
 - Windows IME
 - Android/iOS keyboards
 - Preferences UI and layout variants
+
+### திட்ட வரைபடம்
+- Windows IME
+- Android/iOS விசைப்பலகை
+- Preferences UI மற்றும் layout மாறுபாடுகள்
