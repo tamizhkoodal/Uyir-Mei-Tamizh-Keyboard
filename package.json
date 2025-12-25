@@ -1,0 +1,16 @@
+{
+  "name": "uyir-mei-tamizh-keyboard",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Cross-platform Uyir-Mei Tamizh Keyboard - macOS/Windows (+mobile placeholders)",
+  "license": "MIT",
+  "scripts": {
+    "macos:pkg": "bash apps/macos/scripts/build_layout.sh"
+  }
+}
+
+
+
+
+
+
