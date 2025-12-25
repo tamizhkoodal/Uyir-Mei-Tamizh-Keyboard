@@ -1,4 +1,4 @@
-# Uyir+Mei Tamizh Keyboard உயிர்+மெய் தமிழ் பெத்தான்பலகை 
+# Uyir+Mei Tamizh Keyboard உயிர்+மெய் தமிழ் பெத்தான்பலகை
 Native Tamizh keyboard. First-class macOS support; Windows/Android/iOS planned.
 
 ## macOS
@@ -10,7 +10,7 @@ Native Tamizh keyboard. First-class macOS support; Windows/Android/iOS planned.
 
 
 ## Download (macOS)
-- Installer: [TamizhUyirMei-Keylayout-0.1.0.pkg](apps/macos/installer/TamizhUyirMei-Keylayout-0.1.0.pkg)
+- Installer: [TamizhUyirMei-Keylayout-0.1.0.pkg](apps/macos/installer/TamizhUyirMei-Keylayout-0.1.0.pkg?raw=1)
 
 ## Quick install (macOS)
 - Run the pkg.
