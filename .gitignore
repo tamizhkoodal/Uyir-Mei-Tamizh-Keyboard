@@ -1,0 +1,13 @@
+# macOS keyboard project artifacts
+apps/macos/installer/build/
+
+# Xcode derived data (if added later)
+DerivedData/
+*.xcworkspace/
+*.xcodeproj/
+
+# Node / scripts (future)
+node_modules/
+
+
+.editorconfig
