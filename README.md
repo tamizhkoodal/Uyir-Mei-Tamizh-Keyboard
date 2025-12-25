@@ -3,15 +3,19 @@ Native Tamizh keyboard. First-class macOS support; Windows/Android/iOS planned.
 
 ## macOS
 
-[Caps]
+##### [Caps]
 <img width="400" height="393" alt="Screenshot 2025-12-25 at 2 31 00 PM" src="https://github.com/user-attachments/assets/879eb085-b766-4ab0-b58b-d6c27265c6ac" />
-[Caps + Shift]
+
+##### [Caps + Shift]
 <img width="400" height="395" alt="Screenshot 2025-12-25 at 2 31 19 PM" src="https://github.com/user-attachments/assets/2df9f37f-4d4a-4523-bfb9-86f54bf6251c" />
-Normal
+
+##### Normal
 <img width="400" height="363" alt="Screenshot 2025-12-25 at 2 34 32 PM" src="https://github.com/user-attachments/assets/a7036b0e-5c2f-4738-842f-e98fb877400c" />
-[Option]
+
+##### [Option]
 <img width="400" height="405" alt="Screenshot 2025-12-25 at 2 59 01 PM" src="https://github.com/user-attachments/assets/d84c047b-4446-4a18-945e-c2b0799b19a6" />
-[Option + Shift]
+
+##### [Option + Shift]
 <img width="400" height="396" alt="Screenshot 2025-12-25 at 2 52 22 PM" src="https://github.com/user-attachments/assets/f20bafd6-b802-4dd0-8b0b-7ad41bfe349e" />
 
 ## Key placement (உயிர்+மெய்)
@@ -21,15 +25,15 @@ Keyboard letter placement based on tamizh grammer Uyir+Mei for easy remember
 - **Nedil (long vowels)** (Shift): ஆ, ஈ, ஊ, ஏ, ஓ
 - **Pulli**: ◌்
 
-- **Vallinam (stops)**: க, ச, ட, த, ப, ற
-- **Idaiyinam (semivowels/liquids)**: ய, ர, ல, வ, ழ, ள
-- **Mellinam (nasals)**: ங, ஞ, ண, ந, ம, ன
+- **Vallinam**: க, ச, ட, த, ப, ற
+- **Idaiyinam**: ய, ர, ல, வ, ழ, ள
+- **Mellinam**: ங, ஞ, ண, ந, ம, ன
 
 - **Grantha letters** (option + Shift): ஸ, ஷ, ஜ, ஹ, க்ஷ
 
 
 Examples:
-   க் + இ → கி,
+   க் + இ → கி 
    க +  ி → கி,
    க் + ஆ → கா,
    த் + உ → து
