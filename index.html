@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UyirMei Plug-and-Play Injection Demo</title>
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --ink:#122033;
+    --card:#ffffff;
+    --line:#d7dfec;
+    --brand:#0d4ea6;
+    --brand-soft:#e5efff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:linear-gradient(170deg,#f8fbff 0%,#eef3fa 100%);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:980px;
+    margin:32px auto 120px;
+    padding:0 16px;
+  }
+  .hero{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 12px 34px rgba(15,45,90,0.08);
+  }
+  h1{margin:0 0 10px;font-size:28px}
+  p{margin:0 0 12px;line-height:1.45}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{
+    border:none;
+    background:var(--brand);
+    color:#fff;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button.secondary{background:var(--brand-soft);color:var(--brand)}
+
+  .grid{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+  }
+  label{display:block;font-weight:600;margin-bottom:8px}
+  input, textarea, [contenteditable="true"]{
+    width:100%;
+    border:1px solid #c9d3e3;
+    border-radius:10px;
+    padding:10px 12px;
+    font:inherit;
+    background:#fff;
+  }
+  textarea{min-height:110px;resize:vertical}
+  .editable{
+    min-height:110px;
+    border:1px solid #c9d3e3;
+    border-radius:10px;
+    padding:10px 12px;
+    background:#fff;
+  }
+  .full{grid-column:1 / -1}
+
+  @media (max-width: 800px){
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>UyirMei Keyboard Injection Demo</h1>
+      <p>This page simulates how the on-screen keyboard can be injected into any website.</p>
+      <p>Focus any input/textarea/contenteditable field below. The keyboard appears automatically and writes directly into the focused field.</p>
+      <div class="row">
+        <button id="injectBtn">Inject Keyboard</button>
+        <button class="secondary" id="removeBtn">Remove Keyboard</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <label for="name">Name</label>
+        <input id="name" type="text" placeholder="Focus here and type with keyboard" />
+      </div>
+      <div class="card">
+        <label for="city">City</label>
+        <input id="city" type="text" placeholder="Supports any input field" />
+      </div>
+      <div class="card full">
+        <label for="notes">Notes</label>
+        <textarea id="notes" placeholder="Works with textarea too"></textarea>
+      </div>
+      <div class="card full">
+        <label>Contenteditable</label>
+        <div id="editableBox" class="editable" contenteditable="true">Focus here to test contenteditable integration.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  function isEditable(el){
+    if(!el) return false;
+    if(el.tagName === 'INPUT') return !el.readOnly && !el.disabled;
+    if(el.tagName === 'TEXTAREA') return !el.readOnly && !el.disabled;
+    if(el.isContentEditable) return true;
+    return false;
+  }
+
+  function getCompositionContext(el){
+    if(!el) return {prefix:'', suffix:''};
+    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA'){
+      const value = el.value || '';
+      const start = typeof el.selectionStart === 'number' ? el.selectionStart : value.length;
+      const end = typeof el.selectionEnd === 'number' ? el.selectionEnd : start;
+      return {
+        prefix: value.slice(0, start),
+        suffix: value.slice(end)
+      };
+    }
+    return {
+      prefix: el.textContent || '',
+      suffix: ''
+    };
+  }
+
+  function writeEditable(el, value, caretPos){
+    if(!el) return;
+    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA'){
+      el.value = value;
+      el.dispatchEvent(new Event('input', {bubbles:true}));
+      if(typeof el.setSelectionRange === 'function') el.setSelectionRange(caretPos, caretPos);
+      return;
+    }
+    if(el.isContentEditable){
+      el.textContent = value;
+      el.dispatchEvent(new Event('input', {bubbles:true}));
+    }
+  }
+
+  function installUyirMeiKeyboard(options){
+    const keyboardUrl = (options && options.keyboardUrl) || './apps/web/Uyir-Mei-keyboard.html';
+    const iframeUrl = keyboardUrl.includes('?') ? (keyboardUrl + '&embed=1') : (keyboardUrl + '?embed=1');
+    if(window.__uyirMeiInjected){
+      return window.__uyirMeiInjected;
+    }
+
+    const host = document.createElement('div');
+    host.id = 'uyirmei-injected-host';
+    host.style.position = 'fixed';
+    host.style.left = '0';
+    host.style.right = '0';
+    host.style.bottom = '0';
+    host.style.zIndex = '2147483647';
+    host.style.display = 'none';
+    host.style.pointerEvents = 'none';
+
+    const panel = document.createElement('div');
+    panel.style.maxWidth = '420px';
+    panel.style.margin = '0 auto 0';
+    panel.style.borderRadius = '0';
+    panel.style.overflow = 'hidden';
+    panel.style.boxShadow = 'none';
+    panel.style.border = 'none';
+    panel.style.pointerEvents = 'auto';
+    panel.style.background = 'transparent';
+
+    const iframe = document.createElement('iframe');
+    iframe.src = iframeUrl;
+    iframe.title = 'UyirMei Keyboard';
+    iframe.style.width = '100%';
+    iframe.style.height = '300px';
+    iframe.style.border = '0';
+    iframe.setAttribute('allow', 'clipboard-write');
+
+    panel.appendChild(iframe);
+    host.appendChild(panel);
+    document.body.appendChild(host);
+
+    let activeEditable = null;
+    const contextMap = new WeakMap();
+
+    function showFor(el){
+      activeEditable = el;
+      contextMap.set(el, getCompositionContext(el));
+      host.style.display = 'block';
+      try{
+        iframe.contentWindow.postMessage({source:'uyirmei-host', type:'reset'}, '*');
+      } catch(e){}
+    }
+
+    function hide(){
+      host.style.display = 'none';
+      activeEditable = null;
+    }
+
+    function onFocusIn(ev){
+      const target = ev.target;
+      if(!isEditable(target)) return;
+      showFor(target);
+    }
+
+    function onFocusOut(){
+      setTimeout(()=>{
+        const ae = document.activeElement;
+        const keep = ae && (isEditable(ae) || host.contains(ae));
+        if(!keep) hide();
+      }, 0);
+    }
+
+    function onMessage(event){
+      const data = event.data || {};
+      if(data.source !== 'uyirmei-keyboard' || data.type !== 'state') return;
+
+      if(typeof data.layoutHeight === 'number' && data.layoutHeight > 0){
+        const h = Math.min(Math.max(Math.ceil(data.layoutHeight), 220), 520);
+        iframe.style.height = h + 'px';
+      }
+
+      if(!activeEditable) return;
+      const ctx = contextMap.get(activeEditable) || {prefix:'', suffix:''};
+      const composed = ctx.prefix + (data.text || '') + ctx.suffix;
+      const caret = (ctx.prefix + (data.text || '')).length;
+      writeEditable(activeEditable, composed, caret);
+    }
+
+    document.addEventListener('focusin', onFocusIn, true);
+    document.addEventListener('focusout', onFocusOut, true);
+    window.addEventListener('message', onMessage);
+
+    const api = {
+      showFor,
+      hide,
+      destroy(){
+        document.removeEventListener('focusin', onFocusIn, true);
+        document.removeEventListener('focusout', onFocusOut, true);
+        window.removeEventListener('message', onMessage);
+        host.remove();
+        delete window.__uyirMeiInjected;
+      }
+    };
+
+    window.__uyirMeiInjected = api;
+    return api;
+  }
+
+  const injectBtn = document.getElementById('injectBtn');
+  const removeBtn = document.getElementById('removeBtn');
+
+  injectBtn.addEventListener('click', ()=>{
+    installUyirMeiKeyboard({keyboardUrl:'./apps/web/Uyir-Mei-keyboard.html'});
+  });
+
+  removeBtn.addEventListener('click', ()=>{
+    if(window.__uyirMeiInjected) window.__uyirMeiInjected.destroy();
+  });
+
+  installUyirMeiKeyboard({keyboardUrl:'./apps/web/Uyir-Mei-keyboard.html'});
+})();
+</script>
+</body>
+</html>

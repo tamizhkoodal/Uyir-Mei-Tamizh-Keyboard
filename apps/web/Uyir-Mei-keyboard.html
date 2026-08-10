@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>உயிர்+மெய் · Radial Indic Keyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@500;600;700;800&family=Noto+Sans+Kannada:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Catamaran:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ivory:#F6F1E4;
+    --ivory-deep:#EFE6D3;
+    --ink:#241F1C;
+    --ink-soft:#6B6055;
+    --turmeric:#C1861B;
+    --turmeric-soft:#F1DFB5;
+    --kumkum:#A23B3B;
+    --kumkum-soft:#F0D9D2;
+    --indigo:#2B4C6B;
+    --indigo-soft:#DCE6ED;
+    --key-bg:#FFFFFF;
+    --key-border:#E3D8C0;
+    --key-shadow: 0 1px 0 rgba(36,31,28,0.06), 0 2px 4px rgba(36,31,28,0.05);
+    --radius-card:26px;
+    --radius-key:11px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none;}
+  html,body{margin:0; padding:0; background:#EDE3D0; min-height:100vh; -webkit-user-select:none; user-select:none;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:28px 14px 60px;
+  }
+  .page-label{
+    position:fixed; top:10px; left:0; right:0; text-align:center;
+    font-family:'Catamaran',sans-serif; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:#9C8E77; pointer-events:none;
+  }
+  .app{
+    width:100%; max-width:404px;
+    background:var(--ivory);
+    border-radius:var(--radius-card);
+    box-shadow: 0 1px 2px rgba(36,31,28,.08), 0 18px 40px -14px rgba(36,31,28,.35);
+    overflow:hidden;
+    border:1px solid rgba(36,31,28,.06);
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding:16px 16px 10px;
+  }
+  .topbar h1{
+    font-family:'Baloo Thambi 2',sans-serif;
+    font-size:19px; font-weight:700; margin:0; color:var(--ink);
+    display:flex; flex-direction:column; line-height:1.15;
+  }
+  .topbar h1 small{
+    font-family:'Inter',sans-serif; font-weight:500; font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-top:2px;
+  }
+  .topbar-btns{display:flex; gap:8px;}
+  .pill-btn{
+    border:none; background:var(--key-bg); color:var(--ink-soft);
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:700; cursor:pointer;
+    box-shadow:var(--key-shadow);
+    font-family:'Catamaran',sans-serif;
+  }
+  .pill-btn:active{transform:scale(.92);}
+  .pill-btn.clear{width:auto; padding:0 12px; border-radius:16px; font-size:11.5px; letter-spacing:.03em; font-weight:600;}
+
+  /* ---------- Language note ---------- */
+  .lang-switch-wrap{padding:0 16px 12px;}
+  .lang-note{
+    margin:0 2px; font-size:10.5px; line-height:1.4; color:var(--ink-soft);
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ---------- Output ---------- */
+  .output-wrap{padding:0 16px 12px;}
+  .output{
+    min-height:88px; background:var(--key-bg);
+    border-radius:16px; border:1px solid var(--key-border);
+    padding:14px 16px; font-size:25px; line-height:1.5; color:var(--ink);
+    word-break:break-word; position:relative; white-space:pre-wrap;
+    box-shadow: inset 0 1px 3px rgba(36,31,28,.04);
+  }
+  .output .placeholder{color:#B8AC96; font-family:'Inter',sans-serif; font-size:14px; font-weight:500;}
+  .output .unit{
+    display:inline-block; white-space:pre;
+    transition: opacity .12s ease, transform .12s ease, filter .12s ease;
+  }
+  .output .unit.flip{
+    opacity:0; transform:scaleY(.15) translateY(3px); filter:blur(2px);
+  }
+  .cursor{
+    display:inline-block; width:2px; height:22px; background:var(--kumkum);
+    vertical-align:-4px; margin-left:1px;
+    animation:blink 1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .pending-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:8px; padding:4px 10px; border-radius:20px;
+    background:var(--kumkum-soft); color:var(--kumkum);
+    font-size:11px; font-weight:600; font-family:'Inter',sans-serif;
+    opacity:0; transform:translateY(-4px); transition:all .18s ease;
+  }
+  .pending-tag.show{opacity:1; transform:translateY(0);}
+  .pending-tag b{font-size:14px;}
+
+  .test-result{
+    margin-top:8px;
+    border-radius:12px;
+    border:1px solid #D7CBB2;
+    background:#FFF9ED;
+    color:#594F42;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    line-height:1.45;
+    padding:9px 11px;
+    white-space:pre-wrap;
+    display:none;
+  }
+  .test-result.show{display:block;}
+  .test-result.pass{
+    border-color:#BBD7C2;
+    background:#F1FAF4;
+    color:#2F6040;
+  }
+  .test-result.fail{
+    border-color:#E2B8B8;
+    background:#FFF1F1;
+    color:#7A2F2F;
+  }
+
+  /* ---------- test chips ---------- */
+  .chips{display:flex; gap:7px; padding:0 16px 12px; flex-wrap:wrap;}
+  .chip{
+    font-size:13px; font-weight:600;
+    background:var(--indigo-soft); color:var(--indigo);
+    border:none; padding:7px 13px; border-radius:20px; cursor:pointer;
+  }
+  .chip:active{transform:scale(.95);}
+  .chip:disabled{opacity:.5; pointer-events:none;}
+
+  /* ---------- kolam divider ---------- */
+  .kolam-divider{
+    height:14px; margin:0 16px;
+    background-image: radial-gradient(circle, #D9C9A3 1.4px, transparent 1.6px);
+    background-size: 10px 10px;
+    background-position: center;
+    opacity:.9;
+  }
+
+  /* ---------- keyboard ---------- */
+  .keyboard{
+    background:var(--ivory-deep);
+    padding:12px 6px 14px;
+    touch-action:none;
+  }
+  .krow{display:flex; gap:5px; margin-bottom:6px; padding:0 6px;}
+  .key{
+    flex:1 1 0; height:46px; border-radius:var(--radius-key);
+    background:var(--key-bg); border:1px solid var(--key-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:19px; font-weight:600;
+    color:var(--ink); box-shadow:var(--key-shadow);
+    position:relative; cursor:pointer; touch-action:none;
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; -webkit-user-drag:none;
+    transition:transform .06s ease, background .12s ease;
+  }
+  .key.vowel{background:var(--turmeric-soft); color:#8A5E10; border-color:#E4C685;}
+  .key.util{background:var(--indigo-soft); color:var(--indigo); font-size:15px;}
+  .key.util.active{background:var(--indigo); color:#fff; border-color:var(--indigo);}
+  .key.brahmiToggle{
+    background:var(--indigo-soft);
+    color:var(--indigo);
+    border-color:#C9D7E4;
+    font-size:18px;
+    font-weight:700;
+  }
+  .key.pressed{transform:scale(.90); background:#FBE9C7;}
+  .key.consonant.pressed{background:var(--kumkum-soft);}
+
+  .krow.bottom .key{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; color:var(--ink-soft);}
+  .key.space{flex:5;}
+  .key.mode123{flex:1.4; font-size:13px;}
+  .key.langToggle{flex:1.2; font-size:12px;}
+  .key.specialToggle{flex:1.35; font-size:11.5px; letter-spacing:.02em;}
+  .key.return{flex:1.6; background:var(--indigo); color:#fff; border-color:var(--indigo);}
+  .key.return svg{width:20px; height:20px;}
+  .key.backspace{flex:1.2;}
+  .key.backspace svg{width:20px; height:20px;}
+  .key.punct{flex:1.2; font-size:17px;}
+  .key.spacer{
+    background:transparent;
+    border-color:transparent;
+    box-shadow:none;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .punct-popup{
+    position:absolute; left:0; top:0;
+    display:flex; gap:6px; padding:8px 9px;
+    border-radius:16px; background:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.18), 0 0 0 1.5px var(--key-border);
+    transform:translate(-50%,-120%);
+    z-index:60;
+  }
+  .punct-item{
+    min-width:34px; height:38px; padding:0 6px;
+    border-radius:10px; background:var(--ivory-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; font-weight:700; color:var(--ink);
+    transition: background .12s ease, color .12s ease, transform .12s ease;
+  }
+  .punct-item.target{ background:var(--kumkum); color:#fff; transform:scale(1.15); }
+
+  /* ---------- radial dial overlay ---------- */
+  #dialLayer{position:fixed; inset:0; pointer-events:none; z-index:50;}
+  .dial{position:absolute; width:0; height:0;}
+  .dial-backing{
+    position:absolute; left:0; top:0; width:168px; height:168px;
+    margin-left:-84px; margin-top:-84px;
+    border-radius:50%;
+    border:1.5px dashed rgba(162,59,59,.22);
+    background:radial-gradient(circle, rgba(255,255,255,.97) 0%, rgba(255,255,255,.88) 52%, rgba(255,255,255,.5) 78%, rgba(255,255,255,0) 100%);
+  }
+  .dial-stem{
+    position:absolute; left:0; top:0; height:3px;
+    background:linear-gradient(90deg, rgba(162,59,59,.12), rgba(162,59,59,.6));
+    transform-origin:0 50%; opacity:0; border-radius:2px; width:0;
+    transition:opacity .12s ease;
+  }
+  .dial-stem.show{opacity:1;}
+
+  .ring-item{
+    position:absolute; left:0; top:0; width:auto; min-width:40px; height:40px;
+    margin-left:-20px; margin-top:-20px; padding:0 5px;
+    border-radius:12px; background:#fff; border:1.5px solid var(--key-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:700;
+    color:var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.10);
+    opacity:1; transform:scale(1); white-space:nowrap;
+    transition: opacity .16s ease, transform .16s cubic-bezier(.34,1.4,.64,1),
+                box-shadow .16s ease, border-color .16s ease, background .12s ease, color .12s ease;
+  }
+  .ring-item.dim{ opacity:.22; transform:scale(.8); }
+  .ring-item.target{
+    opacity:1; transform:scale(1.34);
+    background:var(--kumkum); color:#fff; border-color:var(--kumkum);
+    box-shadow:0 0 0 5px rgba(162,59,59,.16), 0 10px 22px rgba(162,59,59,.4);
+    z-index:3;
+  }
+  .ring-item.target.long-form{
+    transform:scale(1.62);
+    box-shadow:0 0 0 6px rgba(162,59,59,.2), 0 12px 26px rgba(162,59,59,.48);
+  }
+
+  .dial-center{
+    position:absolute; left:0; top:0; width:52px; height:52px;
+    margin-left:-26px; margin-top:-26px;
+    border-radius:50%; background:var(--ink); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:21px; font-weight:700;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
+    opacity:1; transform:scale(1);
+    transition: opacity .16s ease, transform .16s ease, background .16s ease;
+  }
+  .dial-center.dim{ opacity:.28; transform:scale(.86); }
+  .dial-center.cancel-mode{ background:#8A8071; }
+
+  .preview-bubble{
+    position:absolute; left:0; top:0;
+    min-width:46px; height:46px; padding:0 9px;
+    border-radius:14px; background:var(--kumkum); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:21px; font-weight:800;
+    transform:translate(-50%,-125%);
+    box-shadow:0 6px 16px rgba(162,59,59,.4), 0 0 0 4px rgba(255,255,255,.5);
+  }
+
+  /* ---------- info sheet ---------- */
+  .sheet-backdrop{
+    position:fixed; inset:0; background:rgba(36,31,28,.42);
+    opacity:0; pointer-events:none; transition:opacity .2s; z-index:90;
+  }
+  .sheet-backdrop.show{opacity:1; pointer-events:auto;}
+  .sheet{
+    position:fixed; left:50%; bottom:0; transform:translate(-50%,100%);
+    width:100%; max-width:404px; background:var(--ivory);
+    border-radius:24px 24px 0 0; padding:18px 20px 26px;
+    transition:transform .26s cubic-bezier(.32,.72,0,1); z-index:91;
+    box-shadow:0 -10px 30px rgba(0,0,0,.2);
+    max-height:78vh; overflow-y:auto;
+  }
+  .sheet.show{transform:translate(-50%,0);}
+  .sheet-handle{width:36px; height:4px; background:#DCD0B4; border-radius:3px; margin:0 auto 14px;}
+  .sheet h2{font-family:'Baloo Thambi 2',sans-serif; font-size:18px; margin:0 0 12px;}
+  .rule{display:flex; gap:12px; margin-bottom:16px; align-items:flex-start;}
+  .rule .tag{
+    flex-shrink:0; font-size:10.5px; font-weight:700; letter-spacing:.05em;
+    color:#fff; background:var(--kumkum); padding:4px 8px; border-radius:7px;
+    font-family:'Inter',sans-serif; margin-top:1px;
+  }
+  .rule.v .tag{background:var(--turmeric);}
+  .rule.i .tag{background:var(--indigo);}
+  .rule p{margin:0; font-size:13.5px; line-height:1.55; color:var(--ink);}
+  .rule p b{font-size:16px;}
+  .rule p i{font-style:normal; color:var(--ink-soft);}
+
+  body.embed-only{
+    padding:0;
+    background:transparent;
+    min-height:0;
+    display:block;
+  }
+  body.embed-only .page-label,
+  body.embed-only .topbar,
+  body.embed-only .lang-switch-wrap,
+  body.embed-only .output-wrap,
+  body.embed-only .chips,
+  body.embed-only .kolam-divider,
+  body.embed-only #sheetBackdrop,
+  body.embed-only #infoSheet{
+    display:none !important;
+  }
+  body.embed-only .app{
+    max-width:none;
+    width:100%;
+    border:none;
+    border-radius:0;
+    box-shadow:none;
+    background:transparent;
+  }
+  body.embed-only .keyboard{
+    padding:10px 6px 10px;
+    border-radius:0;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-label">Prototype · drag from any letter key to compose</div>
+
+<div class="app" id="app">
+
+  <div class="topbar">
+    <h1>உயிர்+மெய் <small id="subtitle">Radial Tamil Keyboard</small></h1>
+    <div class="topbar-btns">
+      <button class="pill-btn clear" id="clearBtn">Clear</button>
+      <button class="pill-btn" id="infoBtn">?</button>
+    </div>
+  </div>
+
+  <div class="lang-switch-wrap">
+    <div class="lang-note" id="langNote"></div>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output" id="output"><span class="placeholder">தட்டச்சு செய்யத் தொடங்குங்கள் · start typing</span></div>
+    <div class="pending-tag" id="pendingTag">இணைப்புக்காக காத்திருக்கிறது <b id="pendingChar"></b></div>
+    <div class="test-result" id="testResult"></div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="kolam-divider"></div>
+
+  <div class="keyboard" id="keyboard">
+    <!-- rows injected by JS -->
+  </div>
+</div>
+
+<div id="dialLayer"></div>
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="infoSheet">
+  <div class="sheet-handle"></div>
+  <h2>How this keyboard works</h2>
+
+  <div class="rule">
+    <span class="tag">TAP</span>
+    <p>Any key types its base form instantly — a consonant like <b>க / ಕ</b>, or a vowel like <b>அ / ಅ</b>. No delay.</p>
+  </div>
+
+  <div class="rule">
+    <span class="tag">HOLD + DRAG DOWN</span>
+    <p>Strips the vowel — <b>க் / ಕ್</b> (pulli / virama). The vowel keys now merge into this consonant until the next word.</p>
+  </div>
+
+  <div class="rule">
+    <span class="tag">HOLD + DRAG UP</span>
+    <p>Long-a shortcut — <b>கா / ಕಾ</b> directly, one motion.</p>
+  </div>
+
+  <div class="rule">
+    <span class="tag">HOLD (any consonant)</span>
+    <p>A radial dial appears around the key, positioned like the vowel pad: west→short/long u, east→short/long i, north-east→short/long e, north-west→short/long o, south-east→ai, south-west→au. Short drag = short vowel, drag further out = long vowel.</p>
+  </div>
+
+  <div class="rule v">
+    <span class="tag">VOWEL PAD</span>
+    <p>The 7 vowel keys sit in one block, positioned as a compass, same layout in both languages. Drag any of them upward to get its long pair, where one exists.</p>
+  </div>
+
+  <div class="rule i">
+    <span class="tag">LANGUAGE SWITCH</span>
+    <p>Tamil and Kannada share nearly identical phonology, so the same gestures and key positions work for both — only the glyphs change. Switching languages mid-word transliterates what you've already typed letter by letter instead of clearing it. A few Tamil letters (like <b>ன</b>) have no separate Kannada letter and fall back to the nearest match (<b>ನ</b>).</p>
+  </div>
+
+  <div class="rule i">
+    <span class="tag">WORD RESET</span>
+    <p>After space, return, or punctuation, the vowel pad goes back to typing standalone vowels — the pulli merge only ever applies to the very next key.</p>
+  </div>
+
+  <div class="rule i">
+    <span class="tag">SMART BACKSPACE</span>
+    <p>On a combined letter like <b>கி / ಕಿ</b>, the first tap strips it back to the pulli form; the second removes it fully. Plain letters delete in one tap.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const EMBED_ONLY = new URLSearchParams(window.location.search).get('embed') === '1';
+  if(EMBED_ONLY) document.body.classList.add('embed-only');
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('selectstart', e => e.preventDefault());
+
+  // ---------- language data ----------
+  // Vowel "roles" (a, i, u, e, o, ai, au) and consonant row-positions are shared
+  // across languages. Each language supplies its own glyph + vowel-sign (matra)
+  // per role, and its own 18 consonants in the same positional order — this is
+  // what makes letter-for-letter transliteration between them possible.
+  const LANGS = {
+    ta: {
+      key:'ta', name:'தமிழ்', font:"'Baloo Thambi 2',sans-serif",
+      subtitle:'Radial Tamil Keyboard',
+      note:'Reference layout — pulli (் ) strips the vowel, vowel signs merge onto the next key.',
+      pulli:'்', aytham:'ஃ',
+      VOWELS:{
+        a:  {char:'அ', long:'ஆ', sign:'',   longSign:'ா'},
+        i:  {char:'இ', long:'ஈ', sign:'ி',  longSign:'ீ'},
+        u:  {char:'உ', long:'ஊ', sign:'ு',  longSign:'ூ'},
+        e:  {char:'எ', long:'ஏ', sign:'ெ',  longSign:'ே'},
+        o:  {char:'ஒ', long:'ஓ', sign:'ொ',  longSign:'ோ'},
+        ai: {char:'ஐ', long:null, sign:'ை', longSign:null},
+        au: {char:'ஔ', long:null, sign:'ௌ', longSign:null},
+      },
+      // Grouped by traditional classification, 6 per row: இடையினம், வல்லினம், மெல்லினம்.
+      consonants:['ய','ர','ல','வ','ழ','ள', 'க','ச','ட','த','ப','ற', 'ங','ஞ','ண','ந','ம','ன'],
+      extraConsonants:['ஜ','ஷ','ஸ','ஹ'],
+      specialLetters:[
+        ['ஜ','ஶ','ஷ','ஸ','ஹ','க்ஷ','ஸ்ரீ'],
+        ['ௐ','ஂ','ஃ','௳','௴','௵','௶','௷','௸','௹','௺']
+      ],
+      specialRadialLetters:['ஜ','ஶ','ஷ','ஸ','ஹ','க்ஷ'],
+      numerals:['௧','௨','௩','௪','௫','௬','௭','௮','௯','௦'],
+      demos:[ {label:'தமிழ்', word:'தமிழ்'}, {label:'வணக்கம்', word:'வணக்கம்'} ],
+      mergeDemo:{base:'க', vowelRole:'u', label:'க் + உ → கு'},
+    },
+    kn: {
+      key:'kn', name:'ಕನ್ನಡ', font:"'Noto Sans Kannada',sans-serif",
+      subtitle:'Radial Kannada Keyboard',
+      note:'Same layout as Tamil — Kannada has no separate letter for ன, so that slot falls back to ನ.',
+      pulli:'್', aytham:'ಃ',
+      VOWELS:{
+        a:  {char:'ಅ', long:'ಆ', sign:'',   longSign:'ಾ'},
+        i:  {char:'ಇ', long:'ಈ', sign:'ಿ',  longSign:'ೀ'},
+        u:  {char:'ಉ', long:'ಊ', sign:'ು',  longSign:'ೂ'},
+        e:  {char:'ಎ', long:'ಏ', sign:'ೆ',  longSign:'ೇ'},
+        o:  {char:'ಒ', long:'ಓ', sign:'ೊ',  longSign:'ೋ'},
+        ai: {char:'ಐ', long:null, sign:'ೈ', longSign:null},
+        au: {char:'ಔ', long:null, sign:'ೌ', longSign:null},
+      },
+      // Same positional order as Tamil (இடையினம், வல்லினம், மெல்லினம்) so transliteration maps index-for-index.
+      consonants:['ಯ','ರ','ಲ','ವ','ೞ','ಳ', 'ಕ','ಚ','ಟ','ತ','ಪ','ಱ', 'ಙ','ಞ','ಣ','ನ','ಮ','ನ'],
+      extraConsonants:[],
+      specialLetters:[
+        ['ಖ','ಘ','ಛ','ಝ','ಠ','ಢ','ಫ','ಭ','ಶ','ಷ'],
+        ['ಹ','ಳ','ಱ','ಕ್ಷ','ಜ್ಞ','ೞ','ಋ','ೠ','ಌ','ೡ']
+      ],
+      specialRadialLetters:['ಖ','ಘ','ಛ','ಝ','ಠ','ಢ','ಫ','ಭ','ಶ','ಷ','ಹ','ಳ','ಱ','ಕ್ಷ','ಜ್ಞ','ೞ'],
+      numerals:['೧','೨','೩','೪','೫','೬','೭','೮','೯','೦'],
+      demos:[ {label:'ಕನ್ನಡ', word:'ಕನ್ನಡ'}, {label:'ನಮಸ್ಕಾರ', word:'ನಮಸ್ಕಾರ'} ],
+      mergeDemo:{base:'ಕ', vowelRole:'u', label:'ಕ್ + ಉ → ಕು'},
+    },
+    en: {
+      key:'en', name:'English', font:"'Inter',sans-serif",
+      subtitle:'English (Tamil-position phonetic)',
+      note:'Same key positions as Tamil/Kannada, each showing the roman letter for that position\'s sound. Tap keys in sequence to spell words.',
+      consonants:[],
+      extraConsonants:[],
+      specialLetters:[],
+      specialRadialLetters:[],
+      numerals:['1','2','3','4','5','6','7','8','9','0'],
+      demos:[],
+    },
+  };
+
+  let currentLangKey = 'ta';
+  function L(){ return LANGS[currentLangKey]; }
+
+  const VOWEL_ROLE_ROWS = {
+    row1:['o','e'],     // top pair
+    row2:['u','a','i'], // middle triplet
+    row3:['au','ai'],   // bottom pair
+  };
+
+  const BOTTOM_BASE = [ {t:'mode123'}, {t:'langToggle'}, {t:'space'}, {t:'punct'}, {t:'return'} ];
+  // Sentence punctuation reachable from one key: tap for the default (.),
+  // hold + drag to the others.
+  const PUNCT_OPTIONS = ['"', ',', '?', '!', '.'];
+  const PUNCT_DEFAULT_IDX = 4; // '.'
+  const DIGIT_ROW = ['1','2','3','4','5','6','7','8','9','0'];
+  const SYMBOL_PRIMARY_ROWS = [
+    ['+','-','×','÷','=','%','<','>','(',')'],
+    ['{','}','[',']','@','#','$','&','*','_'],
+    [':',';',"'",'"','/','\\','|','`','~','^']
+  ];
+  const SYMBOL_SECONDARY_ROWS = [
+    ['!','?',',','.','…','-','_','+','=','*'],
+    ['₹','$','€','£','¥','¢','°','±','√','∞'],
+    ['<','>','≤','≥','≠','§','¶','©','®','™']
+  ];
+  // Tamil-Brahmi laid out to mirror Tamil key positions:
+  // row1: ஒ எ ய ர ல வ ழ ள (then ா toggle key is appended)
+  // row2: உ அ இ க ச ட த ப ற ்
+  // row3: ஔ ஐ ங ஞ ண ந ம ன ஃ
+  const BRAHMI_TAMIL_MAP = {
+    consonants: {
+      'ய':'𑀬','ர':'𑀭','ல':'𑀮','வ':'𑀯','ழ':'𑀵','ள':'𑀴',
+      'க':'𑀓','ச':'𑀘','ட':'𑀝','த':'𑀢','ப':'𑀧','ற':'𑀶',
+      'ங':'𑀗','ஞ':'𑀜','ண':'𑀡','ந':'𑀦','ம':'𑀫','ன':'𑀷',
+      'ஜ':'𑀚','ஷ':'𑀰','ஸ':'𑀲','ஹ':'𑀳'
+    },
+    vowels: {
+      a: {char:'𑀅', long:'𑀆', sign:'', longSign:'𑀸'},
+      i: {char:'𑀇', long:'𑀈', sign:'𑀺', longSign:'𑀻'},
+      u: {char:'𑀉', long:'𑀊', sign:'𑀼', longSign:'𑀽'},
+      e: {char:'𑀏', long:'𑀐', sign:'𑁂', longSign:'𑁃'},
+      o: {char:'𑀑', long:'𑀒', sign:'𑁄', longSign:'𑁅'},
+      ai:{char:'𑀐', long:null, sign:'𑁆𑀬', longSign:null},
+      au:{char:'𑀒', long:null, sign:'𑁏', longSign:null}
+    },
+    pulli:'𑁆',
+    aytham:'𑀃'
+  };
+  const BRAHMI_OTHER_ROWS = [
+    ['𑀖','𑀗','𑀙','𑀛','𑀜','𑀟','𑀠','𑀡','𑀥','𑀦'],
+    ['𑀫','𑀯','𑀰','𑀳','𑀴','𑀵','𑀶','𑀷','𑀸','𑀹'],
+    ['𑁇','𑁈','𑁉','𑁊','𑁋','𑁌','𑁍','𑁎','𑁏','𑁐']
+  ];
+  const BRAHMI_NUMERALS = ['𑁦','𑁧','𑁨','𑁩','𑁪','𑁫','𑁬','𑁭','𑁮','𑁯'];
+  const MURUGA_WORDS_20 = [
+    'முருகன்','கந்தன்','வேலவன்','குமரன்','செந்தில்','சரவணன்','வேல்','குகன்','பழனி','திருச்செந்தூர்',
+    'திருத்தணி','சுவாமிமலை','பழமுதிர்சோலை','கந்தசஷ்டி','ஆறுபடை','சுப்பிரமணியன்','செவ்வேள்','மயில்வாகனன்','வேலாயுதம்','குமாரசுவாமி'
+  ];
+  const MURUGA_WORDS_50 = [
+    'முருகன்','அருள்','ஒளியில்','என்','மனம்','மலர்ந்து','வேலின்','ஞான','தீபம்','உள்ளம்',
+    'முழுவதும்','பிரகாசம்','தருகிறது','செந்தில்','ஆண்டவன்','கருணை','பாதம்','நினைத்து','நாளும்','ஜபம்',
+    'செய்கிறேன்','பழனி','மலைமேல்','குமரன்','சிரிப்பு','கண்டு','பயம்','நீங்கி','துணிவு','பெருகும்',
+    'திருச்செந்தூர்','அலையில்','அவன்','நாமம்','ஒலித்து','வாழ்வு','இனிமை','ஆகும்','சரவணன்','காப்பு',
+    'குடும்பம்','எல்லாம்','சேர்ந்து','பக்தி','பாடல்','பாடி','வெற்றி','வழியில்','நடக்கிறோம்','அருளால்'
+  ];
+  // All 26 English letters, one per slot, positioned to match the Tamil/Kannada
+  // sound in the same spot (row 1 = இடையினம், row 2 = வல்லினம், row 3 = மெல்லினம்);
+  // pulli/aytham have no letter equivalent so those slots are simply omitted here.
+  // Tamil distinguishes more sounds than English has natural single letters for
+  // (3 n's, 2 t's, 2 r's, 2 l's, zh), so a few slots below use an otherwise-unused
+  // letter (b, q, x, h, s, f, w) as a placeholder rather than a true phonetic match.
+  const ENGLISH_ROWS = [
+    ['o','b','e', 'y','r','l','v','z','q'],
+    ['u','a','i', 'k','c','d','t','p','x'],
+    ['w','f', 'g','j','h','s','m','n'],
+  ];
+
+  // ---------- state ----------
+  // Every unit carries enough metadata (kind / base / vrole / long) to be
+  // re-rendered in a different language without knowing anything else.
+  //   kind: 'consonant' | 'vowel' | 'pulli' | 'aytham' | 'literal'
+  //   stage (consonant only): 'plain' | 'pulli' | 'full'
+  let units = [];
+  let pendingConsonant = null;
+  let pulliMode = false;
+  let keyboardMode = 'letters'; // 'letters' | 'symbolsPrimary' | 'symbolsSecondary' | 'special' | 'brahmiTamil' | 'brahmiOther'
+  let brahmiReturnMode = 'letters';
+  let switching = false;
+
+  const appEl = document.getElementById('app');
+  const outputEl = document.getElementById('output');
+  const pendingTag = document.getElementById('pendingTag');
+  const pendingChar = document.getElementById('pendingChar');
+  const testResultEl = document.getElementById('testResult');
+  const keyboardEl = document.getElementById('keyboard');
+  const dialLayer = document.getElementById('dialLayer');
+  const subtitleEl = document.getElementById('subtitle');
+  const langNoteEl = document.getElementById('langNote');
+  const chipsEl = document.getElementById('chips');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function isIndicLang(){ return currentLangKey === 'ta' || currentLangKey === 'kn'; }
+  function isBrahmiMode(){ return keyboardMode === 'brahmiTamil' || keyboardMode === 'brahmiOther'; }
+  function bottomKeys(){
+    if(isIndicLang()) return [ {t:'mode123'}, {t:'langToggle'}, {t:'specialToggle'}, {t:'space'}, {t:'punct'}, {t:'return'} ];
+    return BOTTOM_BASE;
+  }
+
+  // ---------- unit constructors ----------
+  function unitConsonantPlain(base){
+    return {kind:'consonant', stage:'plain', base, vrole:null, long:false, display:base};
+  }
+  function unitConsonantPulli(base){
+    return {kind:'consonant', stage:'pulli', base, vrole:null, long:false, display:base + L().pulli};
+  }
+  function unitConsonantFull(base, vrole, long){
+    const vd = L().VOWELS[vrole];
+    const useLong = !!(long && vd.long !== undefined ? long : long);
+    const sign = long ? vd.longSign : vd.sign;
+    return {kind:'consonant', stage:'full', base, vrole, long:!!long, display: base + (sign || '')};
+  }
+  function unitVowel(vrole, long){
+    const vd = L().VOWELS[vrole];
+    const display = (long && vd.long) ? vd.long : vd.char;
+    return {kind:'vowel', stage:'plain', base:null, vrole, long: !!(long && vd.long), display};
+  }
+  function unitLiteral(display){
+    return {kind:'literal', stage:'plain', base:null, vrole:null, long:false, display};
+  }
+  function unitPulliUtil(){
+    return {kind:'pulli', stage:'plain', base:null, vrole:null, long:false, display:L().pulli};
+  }
+  function unitAytham(){
+    return {kind:'aytham', stage:'plain', base:null, vrole:null, long:false, display:L().aytham};
+  }
+
+  // ---------- render ----------
+  function render(){
+    if(units.length === 0){
+      outputEl.innerHTML = '<span class="placeholder">தட்டச்சு செய்யத் தொடங்குங்கள் · start typing</span>';
+    } else {
+      const html = units.map((u,i)=> '<span class="unit" data-i="'+i+'">'+escapeHtml(unitDisplayForActiveScript(u))+'</span>').join('');
+      outputEl.innerHTML = html + '<span class="cursor"></span>';
+    }
+    if(pendingConsonant){
+      pendingTag.classList.add('show');
+      pendingChar.textContent = previewConsonantText(pendingConsonant, true);
+    } else {
+      pendingTag.classList.remove('show');
+    }
+    refreshDynamicKeyLabels();
+    emitHostState();
+  }
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function push(unit){ units.push(unit); render(); }
+
+  function currentOutputText(){
+    return units.map(u => unitDisplayForActiveScript(u)).join('');
+  }
+
+  function emitHostState(){
+    try{
+      if(window.parent === window) return;
+      const layoutHeight = keyboardEl ? Math.ceil(keyboardEl.getBoundingClientRect().height) : 0;
+      window.parent.postMessage({
+        source: 'uyirmei-keyboard',
+        type: 'state',
+        text: currentOutputText(),
+        lang: currentLangKey,
+        mode: keyboardMode,
+        layoutHeight,
+      }, '*');
+    } catch(e){
+      // Ignore host messaging errors in standalone mode.
+    }
+  }
+
+  function previewConsonantText(base, pulli){
+    if(!isBrahmiMode()) return base + (pulli ? L().pulli : '');
+    const b = BRAHMI_TAMIL_MAP.consonants[base] || base;
+    return b + (pulli ? BRAHMI_TAMIL_MAP.pulli : '');
+  }
+
+  function unitDisplayForScript(u, useBrahmi){
+    if(!useBrahmi) return u.display;
+    if(u.kind === 'literal') return u.display;
+    if(u.kind === 'pulli') return BRAHMI_TAMIL_MAP.pulli;
+    if(u.kind === 'aytham') return BRAHMI_TAMIL_MAP.aytham;
+    if(u.kind === 'vowel'){
+      const vd = BRAHMI_TAMIL_MAP.vowels[u.vrole];
+      if(!vd) return u.display;
+      if(u.long && vd.long) return vd.long;
+      return vd.char;
+    }
+    if(u.kind === 'consonant'){
+      const nbase = normalizedBrahmiBase(u.base);
+      const base = BRAHMI_TAMIL_MAP.consonants[nbase] || nbase;
+      if(u.stage === 'plain') return base;
+      if(u.stage === 'pulli') return base + BRAHMI_TAMIL_MAP.pulli;
+      const vd = BRAHMI_TAMIL_MAP.vowels[u.vrole];
+      if(!vd) return base;
+      const sign = u.long ? vd.longSign : vd.sign;
+      return base + (sign || '');
+    }
+    return u.display;
+  }
+  function unitDisplayForActiveScript(u){
+    return unitDisplayForScript(u, isBrahmiMode());
+  }
+
+  function normalizedBrahmiBase(base){
+    if(BRAHMI_TAMIL_MAP.consonants[base]) return base;
+    const knCons = LANGS.kn.consonants || [];
+    const taCons = LANGS.ta.consonants || [];
+    const idx = knCons.indexOf(base);
+    if(idx >= 0 && taCons[idx]) return taCons[idx];
+    return base;
+  }
+
+  function runMurugaTamizhiCoverageTest(){
+    const oldLang = currentLangKey;
+    const results = MURUGA_WORDS_20.map((word)=>{
+      // Decompose in Tamil logic so it mirrors expected input flow.
+      currentLangKey = 'ta';
+      const parts = decomposeWord(word);
+      const unknown = [];
+      const missingMap = [];
+      parts.forEach((u)=>{
+        if(u.kind === 'literal') unknown.push(u.display);
+        if(u.kind === 'consonant' && !BRAHMI_TAMIL_MAP.consonants[u.base]) missingMap.push(u.base);
+        if(u.kind === 'vowel' && !BRAHMI_TAMIL_MAP.vowels[u.vrole]) missingMap.push(u.vrole);
+      });
+      const brahmi = parts.map(u => unitDisplayForScript(u, true)).join('');
+      const uniqUnknown = Array.from(new Set(unknown));
+      const uniqMissingMap = Array.from(new Set(missingMap));
+      return {
+        word,
+        brahmi,
+        ok: uniqUnknown.length === 0 && uniqMissingMap.length === 0,
+        unknown: uniqUnknown,
+        missingMap: uniqMissingMap,
+      };
+    });
+    currentLangKey = oldLang;
+    const summary = {
+      total: results.length,
+      passed: results.filter(r=>r.ok).length,
+      failed: results.filter(r=>!r.ok).length,
+    };
+    return {summary, results};
+  }
+
+  function isBrahmiOnlyString(text){
+    const chars = Array.from(text || '');
+    for(let i = 0; i < chars.length; i++){
+      const ch = chars[i];
+      if(ch === ' ' || ch === '\n') continue;
+      const cp = ch.codePointAt(0);
+      if(!(cp >= 0x11000 && cp <= 0x1107F)) return false;
+    }
+    return true;
+  }
+
+  function runMurugaBrahmi50CoverageTest(){
+    const oldLang = currentLangKey;
+    const results = MURUGA_WORDS_50.map((word)=>{
+      currentLangKey = 'ta';
+      const parts = decomposeWord(word);
+      const unknown = [];
+      const missingMap = [];
+      parts.forEach((u)=>{
+        if(u.kind === 'literal') unknown.push(u.display);
+        if(u.kind === 'consonant' && !BRAHMI_TAMIL_MAP.consonants[u.base]) missingMap.push(u.base);
+        if(u.kind === 'vowel' && !BRAHMI_TAMIL_MAP.vowels[u.vrole]) missingMap.push(u.vrole);
+      });
+      const brahmi = parts.map(u => unitDisplayForScript(u, true)).join('');
+      const uniqUnknown = Array.from(new Set(unknown));
+      const uniqMissingMap = Array.from(new Set(missingMap));
+      const brahmiOnly = isBrahmiOnlyString(brahmi);
+      return {
+        word,
+        brahmi,
+        ok: uniqUnknown.length === 0 && uniqMissingMap.length === 0 && brahmiOnly,
+        unknown: uniqUnknown,
+        missingMap: uniqMissingMap,
+        brahmiOnly,
+      };
+    });
+    currentLangKey = oldLang;
+    const summary = {
+      total: results.length,
+      passed: results.filter(r=>r.ok).length,
+      failed: results.filter(r=>!r.ok).length,
+    };
+    return {summary, results, sentence: MURUGA_WORDS_50.join(' ')};
+  }
+
+  function showTestResultPanel(lines, pass){
+    if(!testResultEl) return;
+    testResultEl.classList.add('show');
+    testResultEl.classList.toggle('pass', !!pass);
+    testResultEl.classList.toggle('fail', !pass);
+    testResultEl.textContent = lines.join('\n');
+  }
+
+  function hideTestResultPanel(){
+    if(!testResultEl) return;
+    testResultEl.classList.remove('show','pass','fail');
+    testResultEl.textContent = '';
+  }
+
+  function runMurugaBrahmi50OnScreen(){
+    const report = runMurugaBrahmi50CoverageTest();
+
+    currentLangKey = 'ta';
+    setPulliMode(false);
+    keyboardMode = 'brahmiTamil';
+    applyLangChrome();
+    buildKeyboard();
+    buildChips();
+
+    const sentenceUnits = [];
+    MURUGA_WORDS_50.forEach((word, idx)=>{
+      const parts = decomposeWord(word);
+      sentenceUnits.push(...parts);
+      if(idx < MURUGA_WORDS_50.length - 1) sentenceUnits.push(unitLiteral(' '));
+    });
+    units = sentenceUnits;
+    pendingConsonant = null;
+    render();
+
+    const failing = report.results.filter(r=>!r.ok);
+    const lines = [
+      'Brahmi Murugan Test (50 words)',
+      'Result: ' + report.summary.passed + '/' + report.summary.total + ' passed',
+      'Mode: Brahmi Tamil Keyboard',
+    ];
+    if(failing.length > 0){
+      lines.push('Failures: ' + failing.slice(0, 3).map(f=>f.word).join(', '));
+    } else {
+      lines.push('All words mapped and rendered in Brahmi.');
+    }
+    showTestResultPanel(lines, report.summary.failed === 0);
+    return report;
+  }
+
+  function brahmiLabelFromWord(word){
+    const oldLang = currentLangKey;
+    currentLangKey = 'ta';
+    const parts = decomposeWord(word);
+    currentLangKey = oldLang;
+    return parts.map(u => unitDisplayForScript(u, true)).join('');
+  }
+
+  function vowelPreviewText(role){
+    if(!pendingConsonant){
+      if(!isBrahmiMode()) return L().VOWELS[role].char;
+      return BRAHMI_TAMIL_MAP.vowels[role].char;
+    }
+    if(!isBrahmiMode()){
+      const vd = L().VOWELS[role];
+      return pendingConsonant + (vd.sign || '');
+    }
+    const base = BRAHMI_TAMIL_MAP.consonants[pendingConsonant] || pendingConsonant;
+    const vd = BRAHMI_TAMIL_MAP.vowels[role];
+    return base + (vd.sign || '');
+  }
+
+  function vowelPreviewLongText(role){
+    const vd = !isBrahmiMode() ? L().VOWELS[role] : BRAHMI_TAMIL_MAP.vowels[role];
+    if(!vd.long) return vowelPreviewText(role);
+    if(!pendingConsonant) return vd.long;
+    if(!isBrahmiMode()) return pendingConsonant + (vd.longSign || '');
+    const base = BRAHMI_TAMIL_MAP.consonants[pendingConsonant] || pendingConsonant;
+    return base + (vd.longSign || '');
+  }
+
+  function refreshDynamicKeyLabels(){
+    const vowelKeys = keyboardEl.querySelectorAll('.key.vowel[data-vrole]');
+    vowelKeys.forEach((k)=>{
+      const role = k.dataset.vrole;
+      if(!role || !L().VOWELS[role]) return;
+      k.textContent = vowelPreviewText(role);
+    });
+  }
+
+  // ---------- typing actions ----------
+  function typeConsonantPlain(base){
+    if(pulliMode){
+      units.push(unitConsonantPulli(base));
+      pendingConsonant = base;
+      render();
+      return;
+    }
+    push(unitConsonantPlain(base));
+    pendingConsonant = null;
+  }
+  function typeConsonantPulli(base){
+    push(unitConsonantPulli(base));
+    pendingConsonant = base;
+  }
+  function typeConsonantFull(base, vrole, long){
+    push(unitConsonantFull(base, vrole, long));
+    pendingConsonant = null;
+  }
+  function typeVowel(vrole, long){
+    if(pendingConsonant){
+      const base = pendingConsonant;
+      const last = units[units.length-1];
+      if(last && last.kind==='consonant' && last.base===base && last.stage==='pulli'){ units.pop(); }
+      if(vrole === 'a' && !long){
+        units.push(unitConsonantPlain(base));
+        pendingConsonant = null;
+        render();
+        return;
+      }
+      const vd = L().VOWELS[vrole];
+      const useLong = !!(long && vd.long);
+      units.push(unitConsonantFull(base, vrole, useLong));
+      pendingConsonant = null;
+      render();
+    } else {
+      const last = units[units.length-1];
+      if(last && last.kind === 'consonant' && (last.stage === 'plain' || last.stage === 'pulli')){
+        if(vrole === 'a' && !long){
+          units[units.length-1] = unitConsonantPlain(last.base);
+        } else {
+          const vd = L().VOWELS[vrole];
+          const useLong = !!(long && vd.long);
+          units[units.length-1] = unitConsonantFull(last.base, vrole, useLong);
+        }
+        pendingConsonant = null;
+        render();
+        return;
+      }
+      if(vrole === 'a' && !long && last && last.kind === 'consonant' && last.stage === 'pulli'){
+        units[units.length-1] = unitConsonantPlain(last.base);
+        pendingConsonant = null;
+        render();
+        return;
+      }
+      push(unitVowel(vrole, long));
+      pendingConsonant = null;
+    }
+  }
+  function typeLiteral(display){
+    push(unitLiteral(display));
+    pendingConsonant = null;
+  }
+  function typePulliLiteral(){
+    push(unitPulliUtil());
+    pendingConsonant = null;
+  }
+  function setPulliMode(next){
+    if(pulliMode === next) return;
+    pulliMode = next;
+    buildKeyboard();
+  }
+  function findVowelRoleFromSign(signChar){
+    for(const role of Object.keys(L().VOWELS)){
+      const vd = L().VOWELS[role];
+      if(vd.sign && vd.sign === signChar) return {role, long:false};
+      if(vd.longSign && vd.longSign === signChar) return {role, long:true};
+    }
+    return null;
+  }
+  function typeSignUtil(signChar){
+    if(!signChar) return;
+    if(signChar === L().pulli){
+      typePulliLiteral();
+      return;
+    }
+    const signMeta = findVowelRoleFromSign(signChar);
+    if(!signMeta){
+      typeLiteral(signChar);
+      return;
+    }
+    const last = units[units.length-1];
+    if(last && last.kind === 'consonant' && (last.stage === 'plain' || last.stage === 'pulli')){
+      units[units.length-1] = unitConsonantFull(last.base, signMeta.role, signMeta.long);
+      pendingConsonant = null;
+      render();
+      return;
+    }
+    typeLiteral(signChar);
+  }
+  function typePulliUtil(){
+    const last = units[units.length-1];
+    if(last && last.kind === 'consonant' && last.stage === 'pulli'){
+      units[units.length-1] = unitConsonantPlain(last.base);
+      pendingConsonant = null;
+      setPulliMode(false);
+      render();
+      return;
+    }
+    if(last && last.kind === 'consonant' && last.stage === 'plain'){
+      units[units.length-1] = unitConsonantPulli(last.base);
+      pendingConsonant = last.base;
+      setPulliMode(false);
+      render();
+      return;
+    }
+    if(last && last.kind === 'consonant' && last.stage === 'full'){
+      units[units.length-1] = unitConsonantPulli(last.base);
+      pendingConsonant = last.base;
+      setPulliMode(false);
+      render();
+      return;
+    }
+    setPulliMode(!pulliMode);
+    pendingConsonant = null;
+    render();
+  }
+  function typeAytham(){
+    push(unitAytham());
+    pendingConsonant = null;
+  }
+
+  function doBackspace(){
+    if(units.length === 0) return;
+    const last = units[units.length-1];
+    if(last.kind === 'consonant' && last.stage === 'full'){
+      units[units.length-1] = unitConsonantPulli(last.base);
+      pendingConsonant = last.base;
+    } else if(last.kind === 'consonant' && last.stage === 'pulli'){
+      units.pop();
+      if(pendingConsonant === last.base) pendingConsonant = null;
+    } else {
+      units.pop();
+      pendingConsonant = null;
+    }
+    render();
+  }
+
+  function clearAll(){
+    units = [];
+    pendingConsonant = null;
+    setPulliMode(false);
+    hideTestResultPanel();
+    render();
+  }
+
+  clearBtn.addEventListener('click', clearAll);
+
+  // ---------- info sheet ----------
+  const sheet = document.getElementById('infoSheet');
+  const backdrop = document.getElementById('sheetBackdrop');
+  function openSheet(){ sheet.classList.add('show'); backdrop.classList.add('show'); }
+  function closeSheet(){ sheet.classList.remove('show'); backdrop.classList.remove('show'); }
+  document.getElementById('infoBtn').addEventListener('click', openSheet);
+  backdrop.addEventListener('click', closeSheet);
+
+  // ---------- transliteration between languages ----------
+  function transliterateUnit(u, oldKey, newKey){
+    const oldL = LANGS[oldKey], newL = LANGS[newKey];
+    if(u.kind === 'literal') return Object.assign({}, u);
+    if(u.kind === 'pulli') return Object.assign({}, u, {display:newL.pulli});
+    if(u.kind === 'aytham') return Object.assign({}, u, {display:newL.aytham});
+    if(u.kind === 'vowel'){
+      const vd = newL.VOWELS[u.vrole];
+      const display = (u.long && vd.long) ? vd.long : vd.char;
+      return Object.assign({}, u, {display});
+    }
+    if(u.kind === 'consonant'){
+      const idx = oldL.consonants.indexOf(u.base);
+      const newBase = idx >= 0 ? newL.consonants[idx] : u.base;
+      let display;
+      if(u.stage === 'plain'){ display = newBase; }
+      else if(u.stage === 'pulli'){ display = newBase + newL.pulli; }
+      else {
+        const vd = newL.VOWELS[u.vrole];
+        const sign = u.long ? vd.longSign : vd.sign;
+        display = newBase + (sign || '');
+      }
+      return Object.assign({}, u, {base:newBase, display});
+    }
+    return Object.assign({}, u);
+  }
+
+  function animateTransliteration(oldUnits, newUnits, done){
+    const html = oldUnits.map((u,i)=> '<span class="unit" data-i="'+i+'">'+escapeHtml(u.display)+'</span>').join('');
+    outputEl.innerHTML = html;
+    const spans = outputEl.querySelectorAll('.unit');
+    const STEP = 55, HOLD = 120;
+    let maxDelay = 0;
+    newUnits.forEach((nu,i)=>{
+      const span = spans[i];
+      if(!span) return;
+      const delay = i*STEP;
+      maxDelay = Math.max(maxDelay, delay);
+      setTimeout(()=>{
+        span.classList.add('flip');
+        setTimeout(()=>{
+          span.textContent = nu.display;
+          span.classList.remove('flip');
+        }, HOLD);
+      }, delay);
+    });
+    setTimeout(done, maxDelay + HOLD + 90);
+  }
+
+  // ---------- language switcher ----------
+  const LANG_CYCLE = ['ta','kn','en'];
+
+  function setControlsDisabled(disabled){
+    chipsEl.querySelectorAll('.chip').forEach(c=> c.disabled = disabled);
+    clearBtn.disabled = disabled;
+  }
+
+  function applyLangChrome(){
+    outputEl.style.fontFamily = L().font;
+    pendingChar.style.fontFamily = L().font;
+    subtitleEl.textContent = L().subtitle;
+    langNoteEl.textContent = L().note;
+  }
+
+  function switchLang(key){
+    if(key === currentLangKey) return;
+    const oldKey = currentLangKey;
+    const oldUnits = units;
+
+    currentLangKey = key;
+    setPulliMode(false);
+    if(!isIndicLang() && (keyboardMode === 'special' || keyboardMode === 'brahmiTamil' || keyboardMode === 'brahmiOther')) keyboardMode = 'letters';
+    applyLangChrome();
+    buildKeyboard();
+    buildChips();
+
+    // English has no vowel-sign/pulli composition to map to, so only ta<->kn
+    // gets the animated letter-by-letter transliteration; switching English
+    // in or out just changes the keyboard and leaves existing text as-is.
+    const bothIndic = (oldKey==='ta' || oldKey==='kn') && (key==='ta' || key==='kn');
+    if(!bothIndic || oldUnits.length === 0){
+      pendingConsonant = null;
+      render();
+      return;
+    }
+
+    switching = true;
+    setControlsDisabled(true);
+    const newUnits = oldUnits.map(u => transliterateUnit(u, oldKey, key));
+    pendingConsonant = null;
+    animateTransliteration(oldUnits, newUnits, ()=>{
+      units = newUnits;
+      switching = false;
+      setControlsDisabled(false);
+      render();
+    });
+  }
+
+  // ---------- demo chips (decompose a pre-written word into real units) ----------
+  function decomposeWord(word){
+    const Lc = L();
+    const signToRole = {};
+    Object.keys(Lc.VOWELS).forEach(r=>{
+      const vd = Lc.VOWELS[r];
+      if(vd.sign) signToRole[vd.sign] = {role:r, long:false};
+      if(vd.longSign) signToRole[vd.longSign] = {role:r, long:true};
+    });
+    const charToRole = {};
+    const longCharToRole = {};
+    Object.keys(Lc.VOWELS).forEach(r=>{
+      charToRole[Lc.VOWELS[r].char] = r;
+      if(Lc.VOWELS[r].long) longCharToRole[Lc.VOWELS[r].long] = r;
+    });
+    const consonantSet = new Set([...(Lc.consonants || []), ...(Lc.extraConsonants || [])]);
+    const chars = Array.from(word);
+    const out = [];
+    let i = 0;
+    while(i < chars.length){
+      const ch = chars[i];
+      if(consonantSet.has(ch)){
+        const next = chars[i+1];
+        if(next === Lc.pulli){ out.push(unitConsonantPulli(ch)); i+=2; }
+        else if(next && signToRole[next]){
+          const {role, long} = signToRole[next];
+          out.push(unitConsonantFull(ch, role, long)); i+=2;
+        } else { out.push(unitConsonantPlain(ch)); i+=1; }
+      } else if(ch === Lc.pulli){ out.push(unitPulliUtil()); i+=1; }
+      else if(ch === Lc.aytham){ out.push(unitAytham()); i+=1; }
+      else if(charToRole[ch] !== undefined){ out.push(unitVowel(charToRole[ch], false)); i+=1; }
+      else if(longCharToRole[ch] !== undefined){ out.push(unitVowel(longCharToRole[ch], true)); i+=1; }
+      else { out.push(unitLiteral(ch)); i+=1; }
+    }
+    return out;
+  }
+
+  function buildChips(){
+    chipsEl.innerHTML = '';
+    const demoSource = isBrahmiMode() ? LANGS.ta.demos : L().demos;
+    demoSource.forEach(d=>{
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.style.fontFamily = L().font;
+      btn.textContent = isBrahmiMode() ? brahmiLabelFromWord(d.word) : d.label;
+      btn.addEventListener('click', ()=>{
+        if(switching) return;
+        clearAll();
+        const parts = decomposeWord(d.word);
+        let i = 0;
+        const iv = setInterval(()=>{
+          if(i >= parts.length){ clearInterval(iv); return; }
+          push(parts[i]);
+          pendingConsonant = null;
+          i++;
+        }, 150);
+      });
+      chipsEl.appendChild(btn);
+    });
+
+    const mergeSource = isBrahmiMode() ? LANGS.ta.mergeDemo : L().mergeDemo;
+    if(mergeSource){
+      const mergeBtn = document.createElement('button');
+      mergeBtn.className = 'chip';
+      mergeBtn.style.fontFamily = L().font;
+      if(isBrahmiMode()){
+        const {base, vowelRole} = mergeSource;
+        const left = unitDisplayForScript(unitConsonantPulli(base), true);
+        const mid = unitDisplayForScript(unitVowel(vowelRole, false), true);
+        const right = unitDisplayForScript(unitConsonantFull(base, vowelRole, false), true);
+        mergeBtn.textContent = left + ' + ' + mid + ' -> ' + right;
+      } else {
+        mergeBtn.textContent = mergeSource.label;
+      }
+      mergeBtn.addEventListener('click', ()=>{
+        if(switching) return;
+        clearAll();
+        const {base, vowelRole} = mergeSource;
+        setTimeout(()=> typeConsonantPlain(base), 120);
+        setTimeout(()=> typeConsonantPulli(base), 500);
+        setTimeout(()=> typeVowel(vowelRole, false), 1100);
+      });
+      chipsEl.appendChild(mergeBtn);
+    }
+  }
+
+  // ---------- key building ----------
+  function buildKeyboard(){
+    keyboardEl.innerHTML = '';
+    const cons = L().consonants;
+    const brahmiCons = LANGS.ta.consonants;
+    const numerals = isBrahmiMode() ? BRAHMI_NUMERALS : (L().numerals && L().numerals.length ? L().numerals : DIGIT_ROW);
+    const symbolNumerals = DIGIT_ROW;
+    let rows;
+    if(keyboardMode === 'symbolsPrimary'){
+      rows = [
+        [ ...symbolNumerals.map(d=>({t:'digit', d})), {t:'backspace'} ],
+        ...SYMBOL_PRIMARY_ROWS.map(symRow=> symRow.map(d=>({t:'digit', d}))),
+      ];
+    } else if(keyboardMode === 'symbolsSecondary'){
+      rows = [
+        [ ...symbolNumerals.map(d=>({t:'digit', d})), {t:'backspace'} ],
+        ...SYMBOL_SECONDARY_ROWS.map(symRow=> symRow.map(d=>({t:'digit', d}))),
+      ];
+    } else if(keyboardMode === 'special' && isIndicLang()){
+      const specialRows = L().specialLetters.map(row=> row.map(ch=>{
+        if((L().specialRadialLetters || []).includes(ch)) return {t:'specialConsonant', c:ch};
+        return {t:'digit', d:ch, font:L().font};
+      }));
+      if(specialRows[0]) specialRows[0].push({t:'brahmiToggle'});
+      while(specialRows.length < 3){
+        specialRows.push(new Array(10).fill(0).map(()=>({t:'spacer'})));
+      }
+      rows = [
+        [ ...numerals.map(d=>({t:'digit', d, font:L().font})), {t:'backspace'} ],
+        ...specialRows.slice(0,3),
+      ];
+    } else if(keyboardMode === 'brahmiTamil' && isIndicLang()){
+      rows = [
+        [ ...numerals.map(d=>({t:'digit', d, font:L().font})), {t:'backspace'} ],
+        [ {t:'vowel', role:VOWEL_ROLE_ROWS.row1[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row1[1]},
+          ...brahmiCons.slice(0,6).map(c=>({t:'consonant', c})), {t:'brahmiToggle'} ],
+        [ {t:'vowel', role:VOWEL_ROLE_ROWS.row2[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row2[1]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row2[2]},
+          ...brahmiCons.slice(6,12).map(c=>({t:'consonant', c})), {t:'pulliutil'} ],
+        [ {t:'vowel', role:VOWEL_ROLE_ROWS.row3[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row3[1]},
+          ...brahmiCons.slice(12,18).map(c=>({t:'consonant', c})), {t:'aytham'} ],
+      ];
+    } else if(keyboardMode === 'brahmiOther' && isIndicLang()){
+      rows = [
+        [ ...numerals.map(d=>({t:'digit', d, font:L().font})), {t:'backspace'} ],
+        ...BRAHMI_OTHER_ROWS.map((row, i)=>{
+          const cells = row.map(ch=>({t:'digit', d:ch, font:L().font}));
+          if(i === 0) cells.push({t:'brahmiToggle'});
+          return cells;
+        })
+      ];
+    } else if(currentLangKey === 'en'){
+      rows = [
+          [ ...L().numerals.map(d=>({t:'digit', d})), {t:'backspace'} ],
+          ...ENGLISH_ROWS.map(letters=> letters.map(s=>({t:'digit', d:s}))),
+        ];
+    } else {
+      rows = [
+          [ ...L().numerals.map(d=>({t:'digit', d, font:L().font})), {t:'backspace'} ],
+          [ {t:'vowel', role:VOWEL_ROLE_ROWS.row1[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row1[1]},
+            ...cons.slice(0,6).map(c=>({t:'consonant', c})), {t:'brahmiToggle'} ],
+          [ {t:'vowel', role:VOWEL_ROLE_ROWS.row2[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row2[1]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row2[2]},
+            ...cons.slice(6,12).map(c=>({t:'consonant', c})),
+            {t:'pulliutil'} ],
+          [ {t:'vowel', role:VOWEL_ROLE_ROWS.row3[0]}, {t:'vowel', role:VOWEL_ROLE_ROWS.row3[1]},
+            ...cons.slice(12,18).map(c=>({t:'consonant', c})),
+            {t:'aytham'} ],
+        ];
+    }
+
+    rows.forEach(rowData=>{
+      const row = document.createElement('div');
+      row.className = 'krow';
+      rowData.forEach(cell=> row.appendChild(makeKey(cell)));
+      keyboardEl.appendChild(row);
+    });
+
+    const bottomRow = document.createElement('div');
+    bottomRow.className = 'krow bottom';
+    bottomKeys().forEach(cell=>{
+      if(cell.t === 'mode123'){
+        const nextMode = {
+          letters:'symbolsPrimary',
+          symbolsPrimary:'symbolsSecondary',
+          symbolsSecondary:'letters',
+          special:'symbolsPrimary',
+          brahmiTamil:'symbolsPrimary',
+          brahmiOther:'symbolsPrimary'
+        };
+        const label = keyboardMode === 'letters' ? '#+=' : keyboardMode === 'symbolsPrimary' ? '#+=+' : keyboardMode === 'symbolsSecondary' ? 'ABC' : '#+=';
+        const k = makeControlKey(label, 'mode123');
+        k.style.fontFamily = "'Inter',sans-serif";
+        k.addEventListener('click', ()=>{ keyboardMode = nextMode[keyboardMode]; buildKeyboard(); buildChips(); });
+        bottomRow.appendChild(k);
+      } else if(cell.t === 'langToggle'){
+        const label = isBrahmiMode() ? '𑀩𑁆𑀭' : (currentLangKey === 'en' ? 'EN' : L().name);
+        const k = makeControlKey(label, 'langToggle');
+        k.style.fontFamily = (currentLangKey === 'en' && !isBrahmiMode()) ? "'Inter',sans-serif" : L().font;
+        k.addEventListener('click', ()=>{
+          if(switching) return;
+          const nextIdx = (LANG_CYCLE.indexOf(currentLangKey) + 1) % LANG_CYCLE.length;
+          switchLang(LANG_CYCLE[nextIdx]);
+        });
+        bottomRow.appendChild(k);
+      } else if(cell.t === 'specialToggle'){
+        const label = keyboardMode === 'special'
+          ? 'ABC'
+          : (isBrahmiMode() ? '𑀕𑁆𑀭' : (currentLangKey === 'ta' ? 'Gran' : 'Aksh'));
+        const k = makeControlKey(label, 'specialToggle');
+        k.style.fontFamily = isBrahmiMode() ? L().font : "'Inter',sans-serif";
+        k.addEventListener('click', ()=>{
+          if(switching) return;
+          if(keyboardMode === 'brahmiTamil' || keyboardMode === 'brahmiOther'){
+            keyboardMode = 'special';
+            brahmiReturnMode = 'special';
+            buildKeyboard();
+            buildChips();
+            return;
+          }
+          keyboardMode = keyboardMode === 'special' ? 'letters' : 'special';
+          buildKeyboard();
+          buildChips();
+        });
+        bottomRow.appendChild(k);
+      } else if(cell.t === 'space'){
+        const k = makeControlKey('␣', 'space');
+        k.addEventListener('click', ()=> typeLiteral(' '));
+        bottomRow.appendChild(k);
+      } else if(cell.t === 'punct'){
+        const k = makeControlKey(PUNCT_OPTIONS[PUNCT_DEFAULT_IDX], 'punct');
+        attachPunctGestures(k, PUNCT_OPTIONS, PUNCT_DEFAULT_IDX);
+        bottomRow.appendChild(k);
+      } else if(cell.t === 'return'){
+        const k = makeControlKey('', 'return');
+        k.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>';
+        k.addEventListener('click', ()=> typeLiteral('\n'));
+        bottomRow.appendChild(k);
+      }
+    });
+    keyboardEl.appendChild(bottomRow);
+  }
+
+  function makeControlKey(label, cls){
+    const k = document.createElement('div');
+    k.className = 'key ' + cls;
+    k.textContent = label;
+    return k;
+  }
+
+  function makeKey(cell){
+    const k = document.createElement('div');
+    k.className = 'key';
+
+    if(cell.t === 'consonant'){
+      k.classList.add('consonant');
+      k.style.fontFamily = L().font;
+      if(!isBrahmiMode()){
+        k.textContent = pulliMode ? (cell.c + L().pulli) : cell.c;
+      } else {
+        k.textContent = previewConsonantText(cell.c, pulliMode);
+      }
+      attachConsonantGestures(k, cell.c);
+    } else if(cell.t === 'specialConsonant'){
+      k.classList.add('consonant');
+      k.style.fontFamily = L().font;
+      if(!isBrahmiMode()){
+        k.textContent = pulliMode ? (cell.c + L().pulli) : cell.c;
+      } else {
+        k.textContent = previewConsonantText(cell.c, pulliMode);
+      }
+      attachConsonantGestures(k, cell.c);
+    } else if(cell.t === 'vowel'){
+      k.classList.add('vowel');
+      k.dataset.vrole = cell.role;
+      k.style.fontFamily = L().font;
+      k.textContent = vowelPreviewText(cell.role);
+      attachVowelGestures(k, cell.role);
+    } else if(cell.t === 'sign'){
+      k.classList.add('vowel');
+      k.style.fontFamily = L().font;
+      k.textContent = L().VOWELS[cell.role].longSign;
+      k.addEventListener('click', ()=> typeLiteral(L().VOWELS[cell.role].longSign));
+    } else if(cell.t === 'brahmiToggle'){
+      k.classList.add('brahmiToggle');
+      k.style.fontFamily = L().font;
+      k.textContent = '𑀩';
+      k.addEventListener('click', ()=>{
+        if(switching || !isIndicLang()) return;
+        if(keyboardMode === 'brahmiTamil' || keyboardMode === 'brahmiOther'){
+          keyboardMode = brahmiReturnMode;
+        } else {
+          brahmiReturnMode = keyboardMode;
+          keyboardMode = keyboardMode === 'special' ? 'brahmiOther' : 'brahmiTamil';
+        }
+        buildKeyboard();
+        buildChips();
+      });
+    } else if(cell.t === 'pulliutil'){
+      k.classList.add('util');
+      if(pulliMode) k.classList.add('active');
+      k.style.fontFamily = L().font;
+      k.textContent = isBrahmiMode() ? BRAHMI_TAMIL_MAP.pulli : L().pulli;
+      attachPulliUtilGestures(k);
+    } else if(cell.t === 'aytham'){
+      k.classList.add('util');
+      k.style.fontFamily = L().font;
+      k.textContent = isBrahmiMode() ? BRAHMI_TAMIL_MAP.aytham : L().aytham;
+      k.addEventListener('click', ()=> typeAytham());
+    } else if(cell.t === 'backspace'){
+      k.classList.add('backspace');
+      k.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>';
+      let bsInterval = null;
+      k.addEventListener('pointerdown', (e)=>{
+        e.preventDefault(); doBackspace();
+        bsInterval = setTimeout(()=>{
+          bsInterval = setInterval(doBackspace, 90);
+        }, 420);
+      });
+      ['pointerup','pointerleave','pointercancel'].forEach(ev=> k.addEventListener(ev, ()=>{
+        clearTimeout(bsInterval); clearInterval(bsInterval);
+      }));
+    } else if(cell.t === 'digit'){
+      if(cell.font) k.style.fontFamily = cell.font;
+      k.textContent = cell.d;
+      k.addEventListener('click', ()=> typeLiteral(cell.d));
+    } else if(cell.t === 'spacer'){
+      k.classList.add('spacer');
+      k.textContent = '';
+    }
+    return k;
+  }
+
+  // ---------- gesture geometry ----------
+  const DIR_ANGLE = {E:0, SE:45, S:90, SW:135, W:180, NW:225, N:270, NE:315};
+  const DIR_ORDER = ['E','SE','S','SW','W','NW','N','NE'];
+  const DEADZONE = 13, RING_SPLIT = 28, MAX_DIAL = 120;
+  const RING_RADIUS = 68;
+
+  function polar(dx, dy){
+    const dist = Math.hypot(dx, dy);
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    if(angle < 0) angle += 360;
+    return {dist, angle};
+  }
+  function bucketDir(angle){
+    const idx = Math.round(angle / 45) % 8;
+    return DIR_ORDER[idx];
+  }
+  function toXY(angleDeg, r){
+    const rad = angleDeg * Math.PI / 180;
+    return {x: r * Math.cos(rad), y: r * Math.sin(rad)};
+  }
+  const DIAL_SAFE_RADIUS = 98;
+  function clampToViewport(x, y){
+    const pad = 8, r = DIAL_SAFE_RADIUS;
+    let minX = r + pad, maxX = window.innerWidth - r - pad;
+    let minY = r + pad, maxY = window.innerHeight - r - pad;
+    if(minX > maxX){ minX = maxX = window.innerWidth / 2; }
+    if(minY > maxY){ minY = maxY = window.innerHeight / 2; }
+    return {
+      x: Math.min(Math.max(x, minX), maxX),
+      y: Math.min(Math.max(y, minY), maxY)
+    };
+  }
+
+  // ---------- consonant radial dial ----------
+  function compoundMap(base){
+    return {
+      N:  { vrole:'a',  forceLong:true },
+      S:  { pulli:true },
+      SE: { vrole:'ai', forceLong:false },
+      SW: { vrole:'au', forceLong:false },
+      E:  { vrole:'i' },
+      W:  { vrole:'u' },
+      NE: { vrole:'e' },
+      NW: { vrole:'o' },
+    };
+  }
+  function entryText(base, entry, dragLong){
+    const normalizedBase = isBrahmiMode() ? normalizedBrahmiBase(base) : base;
+    if(entry.pulli){
+      if(!isBrahmiMode()) return normalizedBase + L().pulli;
+      return (BRAHMI_TAMIL_MAP.consonants[normalizedBase] || normalizedBase) + BRAHMI_TAMIL_MAP.pulli;
+    }
+    const vd = !isBrahmiMode() ? L().VOWELS[entry.vrole] : BRAHMI_TAMIL_MAP.vowels[entry.vrole];
+    const useLong = entry.forceLong !== undefined ? entry.forceLong : dragLong;
+    const sign = useLong ? vd.longSign : vd.sign;
+    if(!isBrahmiMode()) return normalizedBase + (sign || '');
+    const b = BRAHMI_TAMIL_MAP.consonants[normalizedBase] || normalizedBase;
+    return b + (sign || '');
+  }
+
+  function attachConsonantGestures(keyEl, base){
+    let pointerDownAt = null, centerX=0, centerY=0, moved=false;
+    let overlayEl=null, activeHighlight=null, holdTimer=null, shown=false;
+
+    function showOverlay(){
+      if(switching) return;
+      shown = true;
+      const normalizedBase = isBrahmiMode() ? normalizedBrahmiBase(base) : base;
+      const map = compoundMap(normalizedBase);
+      overlayEl = document.createElement('div');
+      overlayEl.className = 'dial';
+      const vis = clampToViewport(centerX, centerY);
+      overlayEl.style.left = vis.x+'px';
+      overlayEl.style.top = vis.y+'px';
+
+      const backing = document.createElement('div');
+      backing.className = 'dial-backing';
+      overlayEl.appendChild(backing);
+
+      const stem = document.createElement('div');
+      stem.className = 'dial-stem';
+      overlayEl.appendChild(stem);
+
+      const ringItems = {}, ringBase = {};
+      Object.keys(map).forEach(dir=>{
+        const entry = map[dir];
+        const shortText = entryText(normalizedBase, entry, false);
+        const pos = toXY(DIR_ANGLE[dir], RING_RADIUS);
+        const el = document.createElement('div');
+        el.className = 'ring-item';
+        el.style.fontFamily = L().font;
+        el.textContent = shortText;
+        el.style.left = pos.x + 'px';
+        el.style.top = pos.y + 'px';
+        overlayEl.appendChild(el);
+        ringItems[dir] = el;
+        ringBase[dir] = shortText;
+      });
+
+      const center = document.createElement('div');
+      center.className = 'dial-center';
+      center.style.fontFamily = L().font;
+      center.textContent = !isBrahmiMode()
+        ? normalizedBase
+        : (BRAHMI_TAMIL_MAP.consonants[normalizedBase] || normalizedBase);
+      overlayEl.appendChild(center);
+
+      overlayEl._ringItems = ringItems;
+      overlayEl._ringBase = ringBase;
+      overlayEl._center = center;
+      overlayEl._stem = stem;
+      dialLayer.appendChild(overlayEl);
+    }
+
+    function updateOverlay(dist, angle){
+      if(!overlayEl) return;
+      const map = compoundMap(base);
+      const ringItems = overlayEl._ringItems, ringBase = overlayEl._ringBase,
+            center = overlayEl._center, stem = overlayEl._stem;
+
+      center.classList.remove('cancel-mode');
+
+      if(dist > MAX_DIAL){
+        activeHighlight = 'cancel';
+        Object.keys(ringItems).forEach(d=>{
+          ringItems[d].classList.add('dim');
+          ringItems[d].classList.remove('target','long-form');
+          ringItems[d].textContent = ringBase[d];
+        });
+        center.classList.add('dim','cancel-mode');
+        stem.classList.remove('show');
+        return;
+      }
+
+      if(dist < DEADZONE){
+        activeHighlight = 'center';
+        Object.keys(ringItems).forEach(d=>{
+          ringItems[d].classList.remove('dim','target','long-form');
+          ringItems[d].textContent = ringBase[d];
+        });
+        center.classList.remove('dim');
+        stem.classList.remove('show');
+        return;
+      }
+
+      const dir = bucketDir(angle);
+      const entry = map[dir];
+      center.classList.add('dim');
+
+      Object.keys(ringItems).forEach(d=>{
+        const el = ringItems[d];
+        if(d !== dir){
+          el.classList.add('dim');
+          el.classList.remove('target','long-form');
+          el.textContent = ringBase[d];
+        }
+      });
+
+      const targetEl = ringItems[dir];
+      targetEl.classList.remove('dim');
+      targetEl.classList.add('target');
+
+      const isSingle = entry.pulli || entry.forceLong !== undefined;
+      if(isSingle){
+        targetEl.textContent = entryText(base, entry, false);
+        targetEl.classList.remove('long-form');
+        activeHighlight = {dir, ring:'single'};
+      } else {
+        const isLong = dist >= RING_SPLIT;
+        targetEl.textContent = entryText(base, entry, isLong);
+        targetEl.classList.toggle('long-form', isLong);
+        activeHighlight = {dir, ring: isLong ? 'long' : 'short'};
+      }
+
+      stem.style.width = (RING_RADIUS - 30) + 'px';
+      stem.style.transform = 'rotate('+DIR_ANGLE[dir]+'deg)';
+      stem.classList.add('show');
+    }
+
+    function removeOverlay(){
+      if(overlayEl && overlayEl.parentNode) overlayEl.parentNode.removeChild(overlayEl);
+      overlayEl = null; shown = false; activeHighlight = null;
+    }
+
+    function commit(){
+      if(switching) return;
+      if(!shown){
+        typeConsonantPlain(base);
+        return;
+      }
+      if(!activeHighlight || activeHighlight === 'cancel'){ return; }
+      if(activeHighlight === 'center'){
+        typeConsonantPlain(base);
+        return;
+      }
+      const {dir, ring} = activeHighlight;
+      const entry = compoundMap(base)[dir];
+      if(entry.pulli){
+        typeConsonantPulli(base);
+      } else if(entry.forceLong !== undefined){
+        typeConsonantFull(base, entry.vrole, entry.forceLong);
+      } else {
+        typeConsonantFull(base, entry.vrole, ring === 'long');
+      }
+    }
+
+    keyEl.addEventListener('pointerdown', (e)=>{
+      if(switching) return;
+      e.preventDefault();
+      keyEl.setPointerCapture(e.pointerId);
+      keyEl.classList.add('pressed');
+      const rect = keyEl.getBoundingClientRect();
+      centerX = rect.left + rect.width/2;
+      centerY = rect.top + rect.height/2;
+      pointerDownAt = {x:e.clientX, y:e.clientY};
+      moved = false;
+      holdTimer = setTimeout(()=>{ if(!shown) showOverlay(); }, 130);
+    });
+
+    keyEl.addEventListener('pointermove', (e)=>{
+      if(!pointerDownAt) return;
+      const dx = e.clientX - centerX, dy = e.clientY - centerY;
+      const {dist, angle} = polar(dx, dy);
+      if(dist > 8) moved = true;
+      if(moved && !shown){ clearTimeout(holdTimer); showOverlay(); }
+      if(shown) updateOverlay(dist, angle);
+    });
+
+    function finish(e){
+      if(!pointerDownAt) return;
+      clearTimeout(holdTimer);
+      commit();
+      removeOverlay();
+      keyEl.classList.remove('pressed');
+      pointerDownAt = null;
+    }
+    keyEl.addEventListener('pointerup', finish);
+    keyEl.addEventListener('pointercancel', ()=>{ removeOverlay(); keyEl.classList.remove('pressed'); pointerDownAt=null; });
+  }
+
+  // ---------- vowel key: tap / drag-up-for-long ----------
+  function attachVowelGestures(keyEl, role){
+    let startY = 0, dragging=false, preview=null, isLong=false;
+
+    keyEl.addEventListener('pointerdown', (e)=>{
+      if(switching) return;
+      e.preventDefault();
+      keyEl.setPointerCapture(e.pointerId);
+      keyEl.classList.add('pressed');
+      startY = e.clientY;
+      dragging = true; isLong = false;
+    });
+    keyEl.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      const dy = startY - e.clientY;
+      const vd = L().VOWELS[role];
+      if(dy > 28 && vd.long){
+        isLong = true;
+        if(!preview){
+          const rect = keyEl.getBoundingClientRect();
+          preview = document.createElement('div');
+          preview.className = 'preview-bubble';
+          preview.style.fontFamily = L().font;
+          preview.style.left = (rect.left + rect.width/2) + 'px';
+          preview.style.top = rect.top + 'px';
+          preview.textContent = vowelPreviewLongText(role);
+          dialLayer.appendChild(preview);
+        }
+      } else {
+        isLong = false;
+        if(preview){ preview.remove(); preview = null; }
+      }
+    });
+    function finish(){
+      if(!dragging) return;
+      typeVowel(role, isLong);
+      if(preview){ preview.remove(); preview = null; }
+      keyEl.classList.remove('pressed');
+      dragging = false;
+    }
+    keyEl.addEventListener('pointerup', finish);
+    keyEl.addEventListener('pointercancel', ()=>{
+      if(preview){ preview.remove(); preview=null; }
+      keyEl.classList.remove('pressed'); dragging=false;
+    });
+  }
+
+  // ---------- punctuation key: tap for default / hold+drag to pick another ----------
+  function attachPulliUtilGestures(keyEl){
+    let pointerDown = false;
+    let longPressFired = false;
+    let holdTimer = null;
+    let lastTapAt = 0;
+    let singleTapTimer = null;
+    const DOUBLE_TAP_MS = 250;
+
+    keyEl.addEventListener('pointerdown', (e)=>{
+      if(switching) return;
+      e.preventDefault();
+      keyEl.setPointerCapture(e.pointerId);
+      keyEl.classList.add('pressed');
+      pointerDown = true;
+      longPressFired = false;
+      holdTimer = setTimeout(()=>{
+        if(!pointerDown) return;
+        longPressFired = true;
+        setPulliMode(!pulliMode);
+      }, 260);
+    });
+
+    function finish(){
+      if(!pointerDown) return;
+      clearTimeout(holdTimer);
+      if(!longPressFired){
+        const now = Date.now();
+        const isDoubleTap = (now - lastTapAt) <= DOUBLE_TAP_MS;
+        if(isDoubleTap){
+          if(singleTapTimer){ clearTimeout(singleTapTimer); singleTapTimer = null; }
+          lastTapAt = 0;
+          setPulliMode(!pulliMode);
+        } else {
+          lastTapAt = now;
+          singleTapTimer = setTimeout(()=>{
+            typePulliLiteral();
+            singleTapTimer = null;
+          }, DOUBLE_TAP_MS);
+        }
+      }
+      keyEl.classList.remove('pressed');
+      pointerDown = false;
+      longPressFired = false;
+    }
+
+    keyEl.addEventListener('pointerup', finish);
+    keyEl.addEventListener('pointercancel', ()=>{
+      clearTimeout(holdTimer);
+      if(singleTapTimer){ clearTimeout(singleTapTimer); singleTapTimer = null; }
+      keyEl.classList.remove('pressed');
+      pointerDown = false;
+      longPressFired = false;
+    });
+  }
+
+  function attachPunctGestures(keyEl, options, defaultIdx){
+    let pointerDownAt=null, holdTimer=null, popupEl=null, itemEls=[], activeIdx=defaultIdx, shown=false;
+
+    function showPopup(){
+      shown = true;
+      popupEl = document.createElement('div');
+      popupEl.className = 'punct-popup';
+      itemEls = options.map(sym=>{
+        const el = document.createElement('div');
+        el.className = 'punct-item';
+        el.textContent = sym;
+        popupEl.appendChild(el);
+        return el;
+      });
+      dialLayer.appendChild(popupEl);
+      const keyRect = keyEl.getBoundingClientRect();
+      const popRect = popupEl.getBoundingClientRect();
+      const pad = 10, halfW = popRect.width/2;
+      let left = keyRect.left + keyRect.width/2;
+      left = Math.min(Math.max(left, halfW+pad), window.innerWidth-halfW-pad);
+      popupEl.style.left = left+'px';
+      popupEl.style.top = keyRect.top+'px';
+      itemEls[activeIdx].classList.add('target');
+    }
+
+    function updateHighlight(clientX){
+      let closestIdx = 0, closestDist = Infinity;
+      itemEls.forEach((el,i)=>{
+        const r = el.getBoundingClientRect();
+        const d = Math.abs(clientX - (r.left+r.width/2));
+        if(d < closestDist){ closestDist = d; closestIdx = i; }
+      });
+      if(closestIdx !== activeIdx){
+        itemEls[activeIdx].classList.remove('target');
+        activeIdx = closestIdx;
+        itemEls[activeIdx].classList.add('target');
+      }
+    }
+
+    function removePopup(){
+      if(popupEl && popupEl.parentNode) popupEl.parentNode.removeChild(popupEl);
+      popupEl = null; shown = false; itemEls = []; activeIdx = defaultIdx;
+    }
+
+    keyEl.addEventListener('pointerdown', (e)=>{
+      if(switching) return;
+      e.preventDefault();
+      keyEl.setPointerCapture(e.pointerId);
+      keyEl.classList.add('pressed');
+      pointerDownAt = {x:e.clientX, y:e.clientY};
+      holdTimer = setTimeout(()=>{ if(!shown) showPopup(); }, 130);
+    });
+    keyEl.addEventListener('pointermove', (e)=>{
+      if(!pointerDownAt) return;
+      const dx = e.clientX-pointerDownAt.x, dy = e.clientY-pointerDownAt.y;
+      if(!shown && Math.hypot(dx,dy) > 8){ clearTimeout(holdTimer); showPopup(); }
+      if(shown) updateHighlight(e.clientX);
+    });
+    function finish(){
+      if(!pointerDownAt) return;
+      clearTimeout(holdTimer);
+      typeLiteral(options[activeIdx]);
+      removePopup();
+      keyEl.classList.remove('pressed');
+      pointerDownAt = null;
+    }
+    keyEl.addEventListener('pointerup', finish);
+    keyEl.addEventListener('pointercancel', ()=>{
+      removePopup(); keyEl.classList.remove('pressed'); pointerDownAt=null;
+    });
+  }
+
+  window.addEventListener('message', (event)=>{
+    const data = event.data || {};
+    if(data.source !== 'uyirmei-host') return;
+    if(data.type === 'reset'){
+      clearAll();
+      return;
+    }
+    if(data.type === 'set-lang' && LANGS[data.lang]){
+      switchLang(data.lang);
+      return;
+    }
+  });
+
+  // ---------- init ----------
+  window.runMurugaTamizhiCoverageTest = runMurugaTamizhiCoverageTest;
+  window.runMurugaBrahmi50CoverageTest = runMurugaBrahmi50CoverageTest;
+  window.runMurugaBrahmi50OnScreen = runMurugaBrahmi50OnScreen;
+  applyLangChrome();
+  buildKeyboard();
+  buildChips();
+  render();
+})();
+</script>
+</body>
+</html>
